@@ -1,0 +1,42 @@
+{
+  "name": "rcoil",
+  "version": "0.0.1",
+  "description": "Orchestrates multiple requests to different APIs producing a single output. Originally built to be used with Amazon API Gateway and AWS Lambda.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SAPessi/rcoil.git"
+  },
+  "keywords": [
+    "Amazon API Gateway",
+    "API Gateway",
+    "AWS",
+    "Lambda",
+    "API",
+    "orchestration",
+    "backend"
+  ],
+  "author": "Stefano Buliani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SAPessi/rcoil/issues"
+  },
+  "homepage": "https://github.com/SAPessi/rcoil#readme",
+  "dependencies": {
+    "aws-sdk": "^2.2.33",
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
+    "moment": "^2.11.1",
+    "rwlock": "^5.0.0",
+    "valid-url": "^1.0.9"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "express": "^4.13.4",
+    "body-parser": "^1.14.2"
+  }
+}
