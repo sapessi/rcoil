@@ -3,6 +3,8 @@ Rcoil is an orchestration library that makes it easy to call multiple APIs or AW
 
 Rcoil was originally built to help Amazon API Gateway customers orchestrate requests to complex backends into a single API call.
 
+[![Build Status](https://travis-ci.org/SAPessi/rcoil.svg?branch=master)](https://travis-ci.org/SAPessi/rcoil)
+
 # Installation
 To install Rcoil run 
 ```

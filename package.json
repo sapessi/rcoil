@@ -1,7 +1,7 @@
 {
   "name": "rcoil",
-  "version": "0.0.1",
-  "description": "Orchestrates multiple requests to different APIs producing a single output. Originally built to be used with Amazon API Gateway and AWS Lambda.",
+  "version": "0.0.2",
+  "description": "Rcoil is an orchestration library that makes it easy to call multiple APIs or AWS Lambda functions and aggregate the output into a single response.",
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec"
