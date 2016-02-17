@@ -26,7 +26,8 @@ var rcoil = require('rcoil');
 var Rcoil = rcoil.Rcoil;
 var ExecutionDirector = rcoil.ExecutionDirector;
 var Request = rcoil.Request;
-var ConsoleLogger = rcoil.ConsoleLogger;```
+var ConsoleLogger = rcoil.ConsoleLogger;
+```
 
 Once you have imported the module you can setup the first Rcoil
 
@@ -63,7 +64,8 @@ director.start(function(context) {
   var output = JSON.parse(responseData.body);
         
   lambdaContext.succeed(output);
-});```
+});
+```
 
 ## The Rcoil object
 Rcoil is the main data structure that contains all of the request groups and their requests. Data within the `Rcoil` object is stored as a tree inside the `calls` array. The `calls` property is an array of request groups. Request group in turn can contain multiple `Request` objects and other groups in the children property.
@@ -73,7 +75,8 @@ var requestGroup = {
   id: "requestGroupId",
   requests: [],
   children: []
-};```
+};
+```
 
 Each request group can contain multiple request groups. All of the children of a request group will be executed simultaneously.
 
@@ -100,8 +103,11 @@ var calls = [
       }
     ]
   }
-]```
+]
+```
+
 If we called startGroup again now we'd be adding a children to the "group2" group. If we want to add a new group as a child of "group1", at the same level as "group2", we can use the `afterGroup("group1")` method. This will reset the position of tree walker to "group1".
+
 ```javascript
 var calls = [
   {
@@ -120,7 +126,9 @@ var calls = [
       }
     ]
   }
-]```
+]
+```
+
 With this structure the `ExecutionDirector` would first execute "group1", and then run "group2" and "group3" simultaneously.
 
 To create this structure with the object we would do:
@@ -130,11 +138,14 @@ coil
   .startGroup("group1")
     .startGroup("group2")
   .afterGroup("group1")
-    .startGroup("group3");```
+    .startGroup("group3");
+```
     
 You can use the `printCoil` method to show the structure of the coil in a readable format in the console
+
 ```javascript
-coil.printCoil();```
+coil.printCoil();
+```
     
 ## The Request object
 Request groups in the `Rcoil` object contain requests. The `Request` object represents an individual call to an HTTP method or AWS Lambda function. The `Rcoil` object exposes the `addRequest(request)` method which inserts a request in the current group.
@@ -152,7 +163,8 @@ Request.get("firstSimultaneousRequest", {
   port: "80",
   protocol: "http:",
   method: "GET"
-});```
+});
+```
 
 Requests can also interact with AWS Lambda functions.
 
@@ -160,7 +172,8 @@ Requests can also interact with AWS Lambda functions.
 Request.lambda("firstLambdaRequest", "arn:aws:lambda:us-west-2:account-id:function:FunctionName");
 
 // you can also pass a version or alias qualifier 
-Request.lambda("firstLambdaRequest", "arn:aws:lambda:us-west-2:account-id:function:FunctionName", "prod");```
+Request.lambda("firstLambdaRequest", "arn:aws:lambda:us-west-2:account-id:function:FunctionName", "prod");
+```
 
 The `onInput` callback triggered before each request. Use the `onInput` callback to generate a request
 body for the backend. The `ExecutionContext` is passed to the function, all previous requests and responses
@@ -179,7 +192,8 @@ request.onInput(function(context, requestObject) {
     staticValue: "value"
   };
   return newRequest; 
-});```
+});
+```
 
 ## The ExecutionContext object
 The ExecutionContext object is used throughout the execution of a coil to track all requests sent and responses received. The object is passed to all callbacks, such as the `onInput` callback for requests, and events.
@@ -216,7 +230,8 @@ var response = context.responseData("requestGroupId", "requestName");
 //
 //   // if it's a Lambda request
 //   err: "Error message from Lambda"
-// }```
+// }
+```
 
 ## The ExecutionDirector object
 The `ExecutionDirector` object takes an `Rcoil` structure and executes all of the requests in the correct order. Throughout the execution state is kept in the `ExecutionContext` object. The context is passed to all callbacks to allow access to all data exchanged, including requests and responses.
@@ -230,7 +245,8 @@ var director = new ExecutionDirector(coil, {
 });
 director.start(function(context) {
   // do something with the results
-});```
+});
+```
 
 ### Events
 The `ExecutionDirector` object exposes a number of events to manage the lifcycle of an execution.
@@ -250,4 +266,5 @@ director.on("requestStart", function(groupId, request, context) {
   if (request.name == "firstSimultaneousRequest") {
     // do something
   } 
-});```
+});
+```
