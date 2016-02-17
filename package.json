@@ -20,7 +20,7 @@
     "backend"
   ],
   "author": "Stefano Buliani",
-  "license": "MIT",
+  "license": "Apache 2",
   "bugs": {
     "url": "https://github.com/SAPessi/rcoil/issues"
   },
