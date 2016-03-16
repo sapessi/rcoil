@@ -276,7 +276,8 @@ ExecutionDirector.prototype._requestDone = function (requestGroup, requestConfig
   
   var response = {
     body: output,
-    endTime: Date.now()
+    endTime: Date.now(),
+    isCanceled: false
   };
   
   switch (requestConfig.type) {
@@ -300,10 +301,30 @@ ExecutionDirector.prototype._requestDone = function (requestGroup, requestConfig
   if (this.options.debug) {
     var execTime = response.endTime - this.executionContext.requestData(requestGroup.id, requestConfig.name).startTime;
     this.options.logger.debug("Request " + requestConfig.name + " executed in: " + execTime + "ms");
-  }
-  
-  if (this._isAborted()) return;
+  }  
 };
+
+/**
+ * Handles requests being canceled by returning false from the onInput function
+ * 
+ * @function
+ * @private
+ * @property {Object} requestGroup - The completed request group object
+ * @property {Request} requestConfig - The request configuration passed to the RequestPlayer
+ */
+ExecutionDirector.prototype._requestCanceled = function(requestGroup, requestConfig) {
+  this.executionContext.unregisterActiveRequests(requestConfig);
+    
+  var response = {
+    endTime: Date.now(),
+    isCanceled: true
+  };
+  
+  this.executionContext.setResponseData(requestGroup.id, requestConfig.name, response);
+  this.options.logger.info("Request " + requestConfig.name + " canceled");
+  
+  this.emit("requestEnd", requestGroup.id, requestConfig, this.executionContext);
+}
 
 /**
  * Returns an initialized RequestGroupPlayer with all events associated to the private methods 
@@ -320,6 +341,7 @@ ExecutionDirector.prototype._getRequestGroupPlayer = function (requestGroup) {
   player.on("end", this._requestGroupDone.bind(this));
   player.on("requestStart", this._requestStarted.bind(this));
   player.on("requestEnd", this._requestDone.bind(this));
+  player.on("requestCancel", this._requestCanceled.bind(this));
   return player;
 };
 

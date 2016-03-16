@@ -83,6 +83,14 @@ util.inherits(RequestPlayer, events.EventEmitter);
  */
 
 /**
+ * The cancel event is fired whenever the onInput method of the requestConfig returns false
+ * 
+ * @event RequestPlayer#cancel
+ * @type {Object}
+ * @property {Object} requestConfig - The original configuration for the request object
+ */
+
+/**
  * Executes a Request object. This method runs the input callback to retrieve the request data
  * then fires the relevant executor based on the request type.
  * 
@@ -150,6 +158,12 @@ RequestPlayer.prototype._executeLambdaRequest = function(requestConfig) {
   }
   
   var input = this._getRequestInput(requestConfig)
+  
+  if (input === false) {
+    localThis.emit("cancel", requestConfig);
+    return;
+  }
+  
   var lambda = AWS.Lambda({apiVersion: '2015-03-31'});
   var functionConfig = {
     FunctionName: requestConfig.settings.function,
@@ -199,6 +213,10 @@ RequestPlayer.prototype._executeHttpRequest = function (requestConfig) {
   });
 
   var input = this._getRequestInput(requestConfig, this.requestObject);
+  if (input === false) {
+    localThis.emit("cancel", requestConfig);
+    return;
+  }
 
   if (input != null) {
     this.requestObject.write((typeof input === 'object') ? JSON.stringify(input) : input);
@@ -303,6 +321,15 @@ util.inherits(RequestGroupPlayer, events.EventEmitter);
  */
 
 /**
+ * The requestCancel event is fired whenever the onInput function for a request returns false
+ * 
+ * @event RequestGroupPlayer#requestCancel
+ * @type {Object}
+ * @property {Object} requestGroup - The completed request group object
+ * @property {Request} requestConfig - the request configuration for the request that is being canceled
+ */
+
+/**
  * Returns an intialized RequestPlayer object with all of the events connected to callbacks. The
  * connections here are used to propagate events up to the ExecutionDirector.
  * 
@@ -321,17 +348,33 @@ RequestGroupPlayer.prototype._getRequestPlayer = function (request, context, opt
     localThis.emit("requestStart", localThis.requestGroup, requestConfig, requestObject, input);
   });
   newRequest.on("end", function (requestConfig, response, output) {
-    localThis._tmpRequests++;
-
     localThis.emit("requestEnd", localThis.requestGroup, requestConfig, response, output);
 
-    if (localThis._tmpRequests == localThis._requestsCount) {
-      localThis.emit("end", localThis.requestGroup);
-    }
+    localThis._incrementRequests();
+  });
+  newRequest.on("cancel", function(requestConfig) {
+    localThis.emit("requestCancel", localThis.requestGroup, requestConfig);
+    
+    localThis._incrementRequests();
   });
 
   return newRequest;
 };
+
+/**
+ * Utility method that increments the local counter of executed requests and emits the end
+ * event for the request group if necessary
+ * 
+ * @function
+ * @private
+ */
+RequestGroupPlayer.prototype._incrementRequests = function() {
+    this._tmpRequests++;
+    
+    if (this._tmpRequests == this._requestsCount) {
+      this.emit("end", this.requestGroup);
+    }
+}
 
 /**
  * Starts the execution of a request group. All of the request objects configured within the group are

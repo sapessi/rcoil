@@ -50,6 +50,8 @@ coil
         .onInput(function(context) {
           var responseData = JSON.parse(context.responseData("firstRequestGroup", "firstSimultaneouRequest").body);
           return responseData.id;
+          
+          // You can also return false from this method to cancel the execution of the request
         });
     );
     
@@ -195,6 +197,29 @@ request.onInput(function(context, requestObject) {
 });
 ```
 
+To cancel the execution of the request you can simply return `false` from the `onInput` method. If the request
+execution is canceled you will see the `isCanceled` flag in the response data of the `ExecutionContext` for the
+request set to `true`.
+
+```javascript
+request.onInput(function(context, requestObject) {
+  var responseData = JSON.parse(context.responseData("firstRequestGroup", "firstSimultaneouRequest").body);
+  
+  // Basic flow control. If the previous request did not retrieve a valid auth token then
+  // cancel this request
+  if (responseData.authToken == null) {
+    return false;
+  }
+  
+  // return the body for the request. This can be an Object or a string.
+  var newRequest = {
+    id: responseData.id,
+    staticValue: "value"
+  };
+  return newRequest; 
+});
+```
+
 ## The ExecutionContext object
 The ExecutionContext object is used throughout the execution of a coil to track all requests sent and responses received. The object is passed to all callbacks, such as the `onInput` callback for requests, and events.
 
@@ -257,7 +282,7 @@ The `ExecutionDirector` object exposes a number of events to manage the lifcycle
 | groupStart | group, context | groupStart is triggered when the director starts executing a request group. The event is passed the request group object as well as the `ExecutionContext` populated with all requests executed so far. |
 | groupEnd | group, context | groupEnd is triggered when the director completes the execution of a group. The event is passed the request group object as well as the `ExecutionContext` populated with all requests executed so far. |
 | requestStart | groupId, request, context | requestStart is triggered when the `RequestPlayer` starts the execution of a request. The event is passed the groupId that the request belongs to, the `Request` object, and the `ExecutionContext`. |
-| requestEnd | groupId, request, context | requestEnd, is triggered when the `RequestPlayer` completes the execution of a request. The event is passed the groupId that the request belongs to, the `Request` object, and the `ExecutionContext`. |
+| requestEnd | groupId, request, context | requestEnd, is triggered when the `RequestPlayer` completes the execution of a request or the execution is canceled. The event is passed the groupId that the request belongs to, the `Request` object, and the `ExecutionContext`. |
 
 Use the `on` method to subscribe to events.
 

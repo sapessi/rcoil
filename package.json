@@ -1,6 +1,6 @@
 {
   "name": "rcoil",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Rcoil is an orchestration library that makes it easy to call multiple APIs or AWS Lambda functions and aggregate the output into a single response.",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "backend"
   ],
   "author": "Stefano Buliani",
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/SAPessi/rcoil/issues"
   },

@@ -303,7 +303,8 @@ ExecutionContext.prototype.setRequestData = function (groupId, requestName, requ
  *   statusCode: resp.statusCode,
  *   statusMessage: resp.statusMessage,
  *   body: responseOutputString,
- *   endTime: Date.now()
+ *   endTime: Date.now(),
+ *   isCanceled: false
  * }
  * 
  * @function
@@ -383,7 +384,8 @@ ExecutionContext.prototype.setResponseData = function (groupId, requestName, res
  *         statusCode: resp.statusCode,
  *         statusMessage: resp.statusMessage,
  *         body: responseOutputString,
- *         endTime: Date.now()
+ *         endTime: Date.now(),
+ *         isCanceled: false
  *       },
  *       ...
  *     },

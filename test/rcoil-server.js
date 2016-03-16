@@ -29,6 +29,18 @@ function sequentialCallCoil() {
   return director;
 }
 
+function cancelCallCoil() {
+  var coil = new Rcoil();
+  coil.startGroup("group1").addRequest(R.get("request1", "http://localhost:3000/users").onInput(function(ctx) {
+    return false;
+  }));
+  var director = new ExecutionDirector(coil, {
+    logger: new DevNullLogger(),
+    debug: true
+  });
+  return director;
+}
+
 
 describe("Test Rcoil against local express server", function () {
   describe("Users API", function () {
@@ -92,6 +104,14 @@ describe("Test Rcoil against local express server", function () {
         expect(body.headers["x-custom"]).not.to.be.null;
       });
       
+    });
+    it("flow control methods - cancel coil", function() {
+      var director = cancelCallCoil();
+      
+      director.start(function(ctx) {
+        resp = ctx.responseData("group1", "request1");
+        expect(resp.isCanceled).to.equal(true);
+      })
     })
   });
 });
