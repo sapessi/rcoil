@@ -90,8 +90,11 @@ var calls = [
     requests: [],
     children: []
   }
-]```
+]
+```
+
 Starting another group right after the first one will add a new group as a child to the one just created.
+
 ```javascript
 var calls = [
   {
